@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محفظتي الذكية - Smart Wallet</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D4AF37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -349,9 +354,9 @@
                             <i class="fa-solid fa-robot text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg text-white">مستشار الذكاء الاصطناعي (Gemini أونلاين)</h3>
+                            <h3 class="font-bold text-lg text-white">المستشار المالي الذكي (Gemini)</h3>
                             <p class="text-xs text-green-400 flex items-center gap-1">
-                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> متصل بسيرفرات جوجل سحابياً
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> متصل بقاعدة بياناتك المباشرة
                             </p>
                         </div>
                     </div>
@@ -365,7 +370,8 @@
                     <div class="flex items-start gap-2 max-w-[85%]">
                         <div class="p-2 bg-gold/10 text-gold rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                         <div class="bg-card-light p-3 rounded-2xl rounded-tr-none text-xs text-gray-200 leading-relaxed border border-gray-800">
-                            يا مرحب يا حمو! أنا المساعد المالي بتاعك المتصل بسيرفرات جوجل عبر الإنترنت. تأكد إنك حاطط مفتاح الـ API في الإعدادات عشان أرد عليك أونلاين!
+                            يا مرحب يا حمو! أنا المساعد المالي بتاعك. قاري بياناتك حالياً (الكاش، الدهب، المصاريف، والأهداف).
+                            احكيلي حابب تستفسر عن إيه أو عايز استراتيجية إزاي توصل لهدفك أسرع؟
                         </div>
                     </div>
                 </div>
@@ -442,13 +448,13 @@
                     <h3 class="font-bold text-xl text-white mb-2 flex items-center gap-2">
                         <i class="fa-solid fa-key text-gold"></i> إعدادات مفاتيح الـ API (Gemini)
                     </h3>
-                    <p class="text-xs text-gray-400">حط مفاتيح الـ API السحابية هنا، وسيتم استدعاؤها عبر الإنترنت للاتصال بسيرفرات جوجل مباشرة.</p>
+                    <p class="text-xs text-gray-400">حط مفتاح الـ API الخاص بيك هنا لو حابب تربطه مستقبلاً، والمفتاح بيتحفظ محلياً عندك بأمان.</p>
                 </div>
 
                 <div class="space-y-4 bg-card-light p-5 rounded-xl border border-gray-800">
                     <div>
                         <label class="text-xs text-gray-400 block mb-1">اسم الموديل (Model)</label>
-                        <input type="text" id="model-input" placeholder="gemini-1.5-flash" dir="ltr" class="w-full bg-card border border-gray-700 rounded-xl p-3 text-sm text-white focus:border-gold outline-none">
+                        <input type="text" id="model-input" placeholder="gemini-3.8" dir="ltr" class="w-full bg-card border border-gray-700 rounded-xl p-3 text-sm text-white focus:border-gold outline-none">
                     </div>
                     <div>
                         <label class="text-xs text-gray-400 block mb-1">مفتاح 1 (الأساسي)</label>
@@ -471,7 +477,7 @@
                             <button type="button" onclick="toggleKey('api-key-3')" class="px-3 bg-card border border-gray-700 rounded-xl text-gray-400 hover:text-gold"><i class="fa-solid fa-eye"></i></button>
                         </div>
                     </div>
-                    <p class="text-[11px] text-gray-500">لو المفتاح الأول انتهى الحد الأقصى، يتم تجربة المفتاح الثاني والثالث تلقائياً.</p>
+                    <p class="text-[11px] text-gray-500">لو المفتاح الأول وقف أو خلص الحد، بيجرب التاني والتالت تلقائياً.</p>
                     <button onclick="saveApiKey()" class="w-full py-3 bg-gold hover:bg-gold-hover text-black font-bold rounded-xl transition">
                         حفظ المفاتيح محلياً
                     </button>
@@ -526,8 +532,14 @@
             vacations: [],
             apiKey: '',
             apiKeys: ['', '', ''],
-            model: 'gemini-1.5-flash'
+            model: 'gemini-3.8'
         };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(console.error);
+            });
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             loadState();
@@ -542,7 +554,7 @@
                     state = Object.assign(state, d);
                     if (!Array.isArray(state.apiKeys)) state.apiKeys = ['', '', ''];
                     if (state.apiKey && !state.apiKeys[0]) state.apiKeys[0] = state.apiKey;
-                    if (!state.model || state.model === 'gemini-3.8') state.model = 'gemini-1.5-flash';
+                    if (!state.model) state.model = 'gemini-3.8';
                 } catch (e) { console.error(e); }
             }
         }
@@ -641,7 +653,7 @@
             renderVacationsTable();
             renderLedger();
 
-            document.getElementById('model-input').value = state.model || 'gemini-1.5-flash';
+            document.getElementById('model-input').value = state.model || 'gemini-3.8';
             [1, 2, 3].forEach(i => {
                 document.getElementById('api-key-' + i).value = (state.apiKeys && state.apiKeys[i - 1]) || '';
             });
@@ -866,7 +878,7 @@
         function saveApiKey() {
             state.apiKeys = [1, 2, 3].map(i => document.getElementById('api-key-' + i).value.trim());
             state.apiKey = state.apiKeys[0];
-            state.model = document.getElementById('model-input').value.trim() || 'gemini-1.5-flash';
+            state.model = document.getElementById('model-input').value.trim() || 'gemini-3.8';
             saveState();
             alert('تم حفظ المفاتيح والموديل محلياً بنجاح!');
         }
@@ -927,32 +939,26 @@
             return reply;
         }
 
-        // --- REAL CLOUD GEMINI API FETCH CONNECTION ---
         async function askGemini(msg) {
             const keys = (state.apiKeys || []).filter(k => k);
             if (!keys.length) return null;
-
             const f = calculateFinances();
-            const ctx = `أنت مستشار مالي ذكي لتطبيق "محفظتي الذكية". بيانات المستخدم الحالية: صافي الثروة ${f.netWorth} ج.م، الكاش ${f.netCash}، الذهب ${f.goldVal} (${state.gold.grams} جرام)، الأهداف: ${state.goals.map(g => g.title + ' ' + g.target).join('، ')}. أجب بالعامية المصرية باختصار واحترافية على سؤال المستخدم:`;
-            const model = state.model || 'gemini-1.5-flash';
-
+            const ctx = `بيانات المستخدم المالية: صافي الثروة ${f.netWorth} ج.م، الكاش ${f.netCash}، الذهب ${f.goldVal} (${state.gold.grams} جرام)، الأهداف: ${state.goals.map(g => g.title + ' ' + g.target).join('، ')}. رد بالعامية المصرية باختصار كمستشار مالي.`;
+            const model = state.model || 'gemini-3.8';
             for (const key of keys) {
                 try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${key}`, {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
                         body: JSON.stringify({
-                            contents: [{ parts: [{ text: ctx + '\n' + msg }] }]
+                            contents: [{ role: 'user', parts: [{ text: ctx + '\n\nسؤال المستخدم: ' + msg }] }]
                         })
                     });
-
                     if (!res.ok) continue;
                     const data = await res.json();
                     const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
                     if (text) return text;
-                } catch (err) {
-                    console.error("API error with key, trying next...", err);
-                }
+                } catch (err) { console.error(err); }
             }
             return null;
         }
@@ -966,17 +972,8 @@
             appendChatMessage('user', msg);
             inputEl.value = '';
 
-            const loadingId = 'loading_' + Date.now();
-            appendLoadingMessage(loadingId, 'جاري الاتصال بسيرفرات جوجل سحابياً...');
-
             const reply = await askGemini(msg);
-            removeMessage(loadingId);
-
-            if (reply) {
-                appendChatMessage('ai', reply);
-            } else {
-                appendChatMessage('ai', localReply() + '\n\n*(ملاحظة: تم استخدام التحليل المحلي لعدم توفر مفتاح API نشط في الإعدادات)*');
-            }
+            appendChatMessage('ai', reply || localReply());
         }
 
         function appendChatMessage(sender, text) {
@@ -995,25 +992,6 @@
             `;
             box.innerHTML += html;
             box.scrollTop = box.scrollHeight;
-        }
-
-        function appendLoadingMessage(id, text) {
-            const box = document.getElementById('chat-box');
-            const html = `
-                <div id="${id}" class="flex items-start gap-2 max-w-[85%]">
-                    <div class="p-2 bg-gold/10 text-gold rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                    <div class="bg-card-light p-3 rounded-2xl rounded-tr-none text-xs text-gray-400 border border-gray-800 flex items-center gap-2">
-                        <i class="fa-solid fa-spinner animate-spin text-gold"></i> ${text}
-                    </div>
-                </div>
-            `;
-            box.innerHTML += html;
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function removeMessage(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
         }
 
         function clearChat() {

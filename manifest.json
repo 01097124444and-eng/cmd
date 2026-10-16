@@ -1,0 +1,20 @@
+{
+  "name": "محفظتي الذكية",
+  "short_name": "محفظتي",
+  "description": "تطبيق لإدارة المصاريف والذهب والأهداف المالية مع مستشار ذكي",
+  "lang": "ar",
+  "dir": "rtl",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121212",
+  "theme_color": "#D4AF37",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
