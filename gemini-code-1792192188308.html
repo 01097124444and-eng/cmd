@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محفظتي الذكية - Smart Wallet</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#D4AF37',
+                        'gold-hover': '#AA8C2C',
+                        dark: '#121212',
+                        card: '#1E1E1E',
+                        'card-light': '#2A2A2A',
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+        }
+        .gold-text {
+            background: linear-gradient(135deg, #D4AF37 0%, #FFF5C0 50%, #AA8C2C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #121212; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-dark text-gray-100 min-h-screen flex flex-col md:flex-row antialiased selection:bg-gold selection:text-black">
+
+    <!-- Mobile Top Navigation Header -->
+    <div class="md:hidden flex items-center justify-between p-4 bg-card border-b border-gray-800 sticky top-0 z-50">
+        <div class="flex items-center space-x-3 space-x-reverse">
+            <button id="mobileMenuBtn" class="text-gold text-xl focus:outline-none p-1">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <h1 class="text-lg font-bold gold-text flex items-center gap-2">
+                <i class="fa-solid fa-wallet"></i> محفظتي الذكية
+            </h1>
+        </div>
+        <div class="text-xs bg-card-light px-3 py-1 rounded-full border border-gray-700 text-gray-300">
+            أهلاً حمو 👋
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 right-0 transform translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out w-64 bg-card border-l border-gray-800 flex flex-col z-50 h-full">
+        <div class="p-5 border-b border-gray-800 hidden md:flex items-center justify-between">
+            <h1 class="text-xl font-extrabold gold-text flex items-center gap-2">
+                <i class="fa-solid fa-wallet"></i> محفظتي الذكية
+            </h1>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold active-tab" id="btn-dashboard">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>الرئيسية</span>
+            </button>
+            <button onclick="switchTab('transactions')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold" id="btn-transactions">
+                <i class="fa-solid fa-right-left w-5 text-center"></i>
+                <span>المعاملات والسحب</span>
+            </button>
+            <button onclick="switchTab('gold')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold" id="btn-gold">
+                <i class="fa-solid fa-coins w-5 text-center"></i>
+                <span>محفظة الذهب</span>
+            </button>
+            <button onclick="switchTab('goals')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold" id="btn-goals">
+                <i class="fa-solid fa-bullseye w-5 text-center"></i>
+                <span>قائمة الأهداف</span>
+            </button>
+            <button onclick="switchTab('ai')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold" id="btn-ai">
+                <i class="fa-solid fa-robot w-5 text-center"></i>
+                <span>مستشار الذكاء الاصطناعي</span>
+            </button>
+            <button onclick="switchTab('vacations')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold" id="btn-vacations">
+                <i class="fa-solid fa-umbrella-beach w-5 text-center"></i>
+                <span>الإجازات والعطلات</span>
+            </button>
+            <button onclick="switchTab('ledger')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold" id="btn-ledger">
+                <i class="fa-solid fa-book-bookmark w-5 text-center"></i>
+                <span>دفتر الشهور الأرشيف</span>
+            </button>
+            <button onclick="switchTab('settings')" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-4 py-3 rounded-xl transition text-gray-300 hover:bg-card-light hover:text-gold" id="btn-settings">
+                <i class="fa-solid fa-key w-5 text-center"></i>
+                <span>مفتاح الـ API والضبط</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">
+            إصدار v2.5 • حفظ محلي آمن 🔒
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile menu -->
+    <div id="overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+
+        <!-- 1. DASHBOARD TAB -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-panel p-5 rounded-2xl border-l-4 border-gold relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-400 font-semibold mb-1">صافي الثروة الإجمالية</p>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-white" id="dash-net-worth">0 ج.م</h2>
+                        </div>
+                        <div class="p-3 bg-gold/10 text-gold rounded-xl">
+                            <i class="fa-solid fa-vault text-xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3"><i class="fa-solid fa-shield-halved text-green-400"></i> تشمل الكاش والدهب مطروح منها السحب/السالب</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border-l-4 border-green-500 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-400 font-semibold mb-1">الرصيد النقدي المتاح (كاش)</p>
+                            <h2 class="text-2xl md:text-3xl font-bold text-green-400" id="dash-cash">0 ج.م</h2>
+                        </div>
+                        <div class="p-3 bg-green-500/10 text-green-400 rounded-xl">
+                            <i class="fa-solid fa-money-bill-wave text-xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3">المرتب + الإيرادات - المصاريف والسحب</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border-l-4 border-amber-400 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-400 font-semibold mb-1">قيمة محفظة الذهب</p>
+                            <h2 class="text-2xl md:text-3xl font-bold text-amber-300" id="dash-gold-val">0 ج.م</h2>
+                        </div>
+                        <div class="p-3 bg-amber-400/10 text-amber-400 rounded-xl">
+                            <i class="fa-solid fa-gem text-xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-3" id="dash-gold-grams">0 جرام (سعر تحديث حي)</p>
+                </div>
+            </div>
+
+            <!-- Negative / Deficit Alert Card -->
+            <div id="negative-alert" class="hidden bg-red-900/30 border border-red-600/50 p-4 rounded-xl flex items-center justify-between text-red-200">
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <i class="fa-solid fa-circle-exclamation text-red-400 text-2xl"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">تنبيه: يوجد عجز / رصيد بالسالب!</h4>
+                        <p class="text-xs text-red-300" id="negative-msg">لديك قيمة سحب زائدة أو مصاريف تتجاوز الدخل المتاح.</p>
+                    </div>
+                </div>
+                <span class="text-lg font-black text-red-400 dir-ltr" id="negative-val">-0 ج.م</span>
+            </div>
+
+            <!-- Goals Progress Quick View -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-gold"></i> ملخص الأهداف المالية
+                    </h3>
+                    <button onclick="switchTab('goals')" class="text-xs text-gold hover:underline">عرض الكل <i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+                <div id="dash-goals-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Quick Transaction Input & Recent Activity -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-gold"></i> حركة مالية سريعة
+                    </h3>
+                    <form id="quickTransForm" onsubmit="handleQuickTrans(event)" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">نوع الحركة</label>
+                                <select id="qt-type" class="w-full bg-card-light border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                                    <option value="income">إيراد / دخل (+)</option>
+                                    <option value="expense">مصروف (-)</option>
+                                    <option value="withdrawal">سحب يدوي (-)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block mb-1">المبلغ (ج.م)</label>
+                                <input type="number" id="qt-amount" step="any" required placeholder="0.00" class="w-full bg-card-light border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">البيان / الوصف</label>
+                            <input type="text" id="qt-desc" required placeholder="مثلاً: مرتب، خروجة، سحب شخصي..." class="w-full bg-card-light border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-gold hover:bg-gold-hover text-black font-bold rounded-xl transition shadow-lg shadow-gold/20">
+                            تسجيل الحركة فوراً
+                        </button>
+                    </form>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-gold"></i> آخر المعاملات
+                        </h3>
+                        <div id="dash-recent-list" class="space-y-2 max-h-56 overflow-y-auto"></div>
+                    </div>
+                    <button onclick="switchTab('transactions')" class="w-full mt-4 py-2 bg-card-light hover:bg-gray-700 text-xs text-gray-300 rounded-xl text-center">
+                        عرض سجل كل المعاملات
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. TRANSACTIONS TAB -->
+        <section id="tab-transactions" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="font-bold text-xl text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-gold"></i> إدارة المعاملات والسحب اليدوي
+                </h3>
+
+                <form id="fullTransForm" onsubmit="handleFullTrans(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-card-light p-4 rounded-xl border border-gray-800">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">النوع</label>
+                        <select id="ft-type" class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                            <option value="income">إيراد / دخل (+)</option>
+                            <option value="expense">مصروف عادي (-)</option>
+                            <option value="withdrawal">سحب يدوي (-)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">المبلغ (ج.م)</label>
+                        <input type="number" id="ft-amount" step="any" required placeholder="0.00" class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">البيان والتفاصيل</label>
+                        <input type="text" id="ft-desc" required placeholder="سبب الحركة..." class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full py-2.5 bg-gold hover:bg-gold-hover text-black font-bold rounded-xl transition">
+                            إضافة المعاملة
+                        </button>
+                    </div>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm text-gray-300">
+                        <thead class="bg-card-light text-gray-400 text-xs border-b border-gray-800">
+                            <tr>
+                                <th class="p-3">التاريخ والوقت</th>
+                                <th class="p-3">النوع</th>
+                                <th class="p-3">البيان</th>
+                                <th class="p-3">المبلغ</th>
+                                <th class="p-3 text-center">إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-trans-table" class="divide-y divide-gray-800"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. GOLD WALLET TAB -->
+        <section id="tab-gold" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h3 class="font-bold text-xl text-amber-300 flex items-center gap-2">
+                            <i class="fa-solid fa-coins text-gold"></i> محفظة الذهب والاستثمار
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">تابع إجمالي جرامات الذهب وسعر الجرام الحي لتقييم ثروتك بالكامل</p>
+                    </div>
+                    <div class="bg-amber-500/10 border border-amber-500/30 px-4 py-2 rounded-xl text-amber-300 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>سعر جرام 24 افتراضي: <strong id="gold-rate-display">3800</strong> ج.م</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-card-light p-5 rounded-xl border border-gray-800 space-y-4">
+                        <h4 class="font-bold text-sm text-white">تحديث بيانات الذهب</h4>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">إجمالي جرامات الذهب المعاك</label>
+                            <input type="number" id="gold-grams-input" step="any" placeholder="0.00" class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">سعر جرام الذهب اليوم (ج.م)</label>
+                            <input type="number" id="gold-price-input" step="any" placeholder="3800" class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                        </div>
+                        <button onclick="saveGoldData()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-bold rounded-xl transition">
+                            حفظ وتحديث القيمة
+                        </button>
+                    </div>
+
+                    <div class="md:col-span-2 glass-panel p-6 rounded-xl flex flex-col justify-center items-center text-center space-y-3 border border-amber-500/20">
+                        <i class="fa-solid fa-coins text-5xl text-amber-400 mb-2"></i>
+                        <span class="text-xs text-gray-400">إجمالي القيمة المادية للذهب الآن</span>
+                        <h2 class="text-3xl md:text-5xl font-black text-amber-300" id="gold-total-calc">0 ج.م</h2>
+                        <p class="text-xs text-gray-400" id="gold-detail-sub">0 جرام × 0 ج.م/جرام</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. GOALS TAB -->
+        <section id="tab-goals" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="font-bold text-xl text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-gold"></i> قائمة الأهداف المالية
+                        </h3>
+                        <p class="text-xs text-gray-400">أضف أي هدف تحوش له (عربية، سكوتر، أجهزة...) وتابع نسبة تقدمك</p>
+                    </div>
+                    <button onclick="showAddGoalModal()" class="py-2 px-4 bg-gold hover:bg-gold-hover text-black font-bold text-xs rounded-xl transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> هدف جديد
+                    </button>
+                </div>
+
+                <div id="goals-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- 5. AI ASSISTANT CHAT TAB -->
+        <section id="tab-ai" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl flex flex-col h-[75vh]">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-800">
+                    <div class="flex items-center space-x-3 space-x-reverse">
+                        <div class="p-3 bg-gold/10 text-gold rounded-xl">
+                            <i class="fa-solid fa-robot text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-white">مستشار الذكاء الاصطناعي (Gemini أونلاين)</h3>
+                            <p class="text-xs text-green-400 flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> متصل بسيرفرات جوجل سحابياً
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="clearChat()" class="text-xs text-gray-400 hover:text-red-400 p-2">
+                        <i class="fa-solid fa-trash"></i> مسح الشات
+                    </button>
+                </div>
+
+                <!-- Chat Messages Box -->
+                <div id="chat-box" class="flex-1 overflow-y-auto my-4 space-y-4 p-2">
+                    <div class="flex items-start gap-2 max-w-[85%]">
+                        <div class="p-2 bg-gold/10 text-gold rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-card-light p-3 rounded-2xl rounded-tr-none text-xs text-gray-200 leading-relaxed border border-gray-800">
+                            يا مرحب يا حمو! أنا المساعد المالي بتاعك المتصل بسيرفرات جوجل عبر الإنترنت. تأكد إنك حاطط مفتاح الـ API في الإعدادات عشان أرد عليك أونلاين!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Form -->
+                <form id="aiChatForm" onsubmit="handleAiChat(event)" class="flex gap-2 pt-2 border-t border-gray-800">
+                    <input type="text" id="ai-input" placeholder="اسأل الذكاء الاصطناعي عن استراتيجية توفير، دهب، هدف..." required class="flex-1 bg-card-light border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:border-gold outline-none">
+                    <button type="submit" class="py-3 px-6 bg-gold hover:bg-gold-hover text-black font-bold rounded-xl transition flex items-center justify-center">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 6. VACATIONS TAB -->
+        <section id="tab-vacations" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="font-bold text-xl text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-umbrella-beach text-gold"></i> سجل الإجازات والعطلات
+                </h3>
+                <p class="text-xs text-gray-400 mb-6">سجل أيام إجازتك وحسّب الخصومات المؤثرة على المرتب بكل دقة</p>
+
+                <form id="vacationForm" onsubmit="handleVacation(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-card-light p-4 rounded-xl border border-gray-800">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">تاريخ الإجازة</label>
+                        <input type="date" id="vac-date" required class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">سبب / بيان الإجازة</label>
+                        <input type="text" id="vac-reason" placeholder="راحة، سفرية، خروجة..." required class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">الخصم من المرتب (إن وجد)</label>
+                        <input type="number" id="vac-deduction" step="any" placeholder="0.00" class="w-full bg-card border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full py-2.5 bg-gold hover:bg-gold-hover text-black font-bold rounded-xl transition">
+                            تسجيل الإجازة
+                        </button>
+                    </div>
+                </form>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm text-gray-300">
+                        <thead class="bg-card-light text-gray-400 text-xs border-b border-gray-800">
+                            <tr>
+                                <th class="p-3">التاريخ</th>
+                                <th class="p-3">السبب</th>
+                                <th class="p-3">قيمة الخصم</th>
+                                <th class="p-3 text-center">إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vacation-table" class="divide-y divide-gray-800"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. MONTHLY LEDGER TAB -->
+        <section id="tab-ledger" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="font-bold text-xl text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-gold"></i> دفتر حسابات الشهور الأرشيف
+                </h3>
+                <p class="text-xs text-gray-400 mb-6">ملخص المعاملات مقفولة لكل شهر بشكل آلي ومقارنتها</p>
+                <div id="ledger-months-container" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- 8. SETTINGS & API KEY TAB -->
+        <section id="tab-settings" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl space-y-6 max-w-xl mx-auto">
+                <div>
+                    <h3 class="font-bold text-xl text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-key text-gold"></i> إعدادات مفاتيح الـ API (Gemini)
+                    </h3>
+                    <p class="text-xs text-gray-400">حط مفاتيح الـ API السحابية هنا، وسيتم استدعاؤها عبر الإنترنت للاتصال بسيرفرات جوجل مباشرة.</p>
+                </div>
+
+                <div class="space-y-4 bg-card-light p-5 rounded-xl border border-gray-800">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">اسم الموديل (Model)</label>
+                        <input type="text" id="model-input" placeholder="gemini-1.5-flash" dir="ltr" class="w-full bg-card border border-gray-700 rounded-xl p-3 text-sm text-white focus:border-gold outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">مفتاح 1 (الأساسي)</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="api-key-1" placeholder="AIzaSy..." dir="ltr" class="flex-1 bg-card border border-gray-700 rounded-xl p-3 text-sm text-white focus:border-gold outline-none">
+                            <button type="button" onclick="toggleKey('api-key-1')" class="px-3 bg-card border border-gray-700 rounded-xl text-gray-400 hover:text-gold"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">مفتاح 2 (احتياطي)</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="api-key-2" placeholder="AIzaSy..." dir="ltr" class="flex-1 bg-card border border-gray-700 rounded-xl p-3 text-sm text-white focus:border-gold outline-none">
+                            <button type="button" onclick="toggleKey('api-key-2')" class="px-3 bg-card border border-gray-700 rounded-xl text-gray-400 hover:text-gold"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">مفتاح 3 (احتياطي)</label>
+                        <div class="flex gap-2">
+                            <input type="password" id="api-key-3" placeholder="AIzaSy..." dir="ltr" class="flex-1 bg-card border border-gray-700 rounded-xl p-3 text-sm text-white focus:border-gold outline-none">
+                            <button type="button" onclick="toggleKey('api-key-3')" class="px-3 bg-card border border-gray-700 rounded-xl text-gray-400 hover:text-gold"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-gray-500">لو المفتاح الأول انتهى الحد الأقصى، يتم تجربة المفتاح الثاني والثالث تلقائياً.</p>
+                    <button onclick="saveApiKey()" class="w-full py-3 bg-gold hover:bg-gold-hover text-black font-bold rounded-xl transition">
+                        حفظ المفاتيح محلياً
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: Add New Goal -->
+    <div id="goalModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-card border border-gray-800 rounded-2xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-lg text-white">إضافة هدف جديد</h3>
+                <button onclick="closeAddGoalModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="goalForm" onsubmit="handleSaveGoal(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">اسم الهدف</label>
+                    <input type="text" id="goal-title" placeholder="عربية، سكوتر، لاب توب..." required class="w-full bg-card-light border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">المبلغ المطلوب (ج.م)</label>
+                    <input type="number" id="goal-target" step="any" required placeholder="0.00" class="w-full bg-card-light border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">أيقونة الهدف</label>
+                    <select id="goal-icon" class="w-full bg-card-light border border-gray-700 rounded-xl p-2.5 text-sm text-white focus:border-gold outline-none">
+                        <option value="fa-car">🚗 سيارة / عربية</option>
+                        <option value="fa-motorcycle">🛵 سكوتر / موتوسيكل</option>
+                        <option value="fa-laptop">💻 لاب توب / كمبيوتر</option>
+                        <option value="fa-mobile-screen">📱 موبايل</option>
+                        <option value="fa-house">🏠 عقار / شقة</option>
+                        <option value="fa-plane">✈️ سفر / إجازة</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3 bg-gold hover:bg-gold-hover text-black font-bold rounded-xl transition mt-2">
+                    حفظ الهدف
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Core Logic -->
+    <script>
+        let state = {
+            transactions: [],
+            gold: { grams: 0, pricePerGram: 3800 },
+            goals: [
+                { id: 1, title: "عربية جديدة", target: 400000, icon: "fa-car" }
+            ],
+            vacations: [],
+            apiKey: '',
+            apiKeys: ['', '', ''],
+            model: 'gemini-1.5-flash'
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderAll();
+        });
+
+        function loadState() {
+            const saved = localStorage.getItem('my_smart_wallet_data');
+            if (saved) {
+                try {
+                    const d = JSON.parse(saved);
+                    state = Object.assign(state, d);
+                    if (!Array.isArray(state.apiKeys)) state.apiKeys = ['', '', ''];
+                    if (state.apiKey && !state.apiKeys[0]) state.apiKeys[0] = state.apiKey;
+                    if (!state.model || state.model === 'gemini-3.8') state.model = 'gemini-1.5-flash';
+                } catch (e) { console.error(e); }
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('my_smart_wallet_data', JSON.stringify(state));
+            renderAll();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-gold', 'bg-card-light');
+                btn.classList.add('text-gray-300');
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('text-gold', 'bg-card-light');
+                activeBtn.classList.remove('text-gray-300');
+            }
+
+            if (window.innerWidth < 768) {
+                toggleMobileMenu(false);
+            }
+        }
+
+        function toggleMobileMenu(forceState) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const isOpen = !sidebar.classList.contains('translate-x-full');
+            const newState = forceState !== undefined ? forceState : !isOpen;
+
+            if (newState) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => toggleMobileMenu());
+
+        function calculateFinances() {
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let totalWithdrawal = 0;
+
+            state.transactions.forEach(t => {
+                if (t.type === 'income') totalIncome += Number(t.amount);
+                if (t.type === 'expense') totalExpense += Number(t.amount);
+                if (t.type === 'withdrawal') totalWithdrawal += Number(t.amount);
+            });
+
+            let totalVacDeduction = 0;
+            state.vacations.forEach(v => {
+                totalVacDeduction += Number(v.deduction || 0);
+            });
+
+            const netCash = totalIncome - totalExpense - totalWithdrawal - totalVacDeduction;
+            const goldVal = Number(state.gold.grams || 0) * Number(state.gold.pricePerGram || 0);
+            const netWorth = netCash + goldVal;
+
+            return { totalIncome, totalExpense, totalWithdrawal, netCash, goldVal, netWorth };
+        }
+
+        function renderAll() {
+            const f = calculateFinances();
+
+            document.getElementById('dash-net-worth').innerText = f.netWorth.toLocaleString() + ' ج.م';
+            document.getElementById('dash-cash').innerText = f.netCash.toLocaleString() + ' ج.م';
+            document.getElementById('dash-gold-val').innerText = f.goldVal.toLocaleString() + ' ج.م';
+            document.getElementById('dash-gold-grams').innerText = `${state.gold.grams || 0} جرام (سعر تحديث حي)`;
+
+            const alertBox = document.getElementById('negative-alert');
+            if (f.netCash < 0) {
+                alertBox.classList.remove('hidden');
+                document.getElementById('negative-val').innerText = f.netCash.toLocaleString() + ' ج.م';
+            } else {
+                alertBox.classList.add('hidden');
+            }
+
+            renderDashGoals(f.netWorth);
+            renderRecentTrans();
+            renderFullTransTable();
+
+            document.getElementById('gold-grams-input').value = state.gold.grams || '';
+            document.getElementById('gold-price-input').value = state.gold.pricePerGram || 3800;
+            document.getElementById('gold-rate-display').innerText = state.gold.pricePerGram || 3800;
+            document.getElementById('gold-total-calc').innerText = f.goldVal.toLocaleString() + ' ج.م';
+            document.getElementById('gold-detail-sub').innerText = `${state.gold.grams || 0} جرام × ${state.gold.pricePerGram || 0} ج.م/جرام`;
+
+            renderGoalsPage(f.netWorth);
+            renderVacationsTable();
+            renderLedger();
+
+            document.getElementById('model-input').value = state.model || 'gemini-1.5-flash';
+            [1, 2, 3].forEach(i => {
+                document.getElementById('api-key-' + i).value = (state.apiKeys && state.apiKeys[i - 1]) || '';
+            });
+        }
+
+        function renderDashGoals(netWorth) {
+            const container = document.getElementById('dash-goals-list');
+            if (state.goals.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500">لا توجد أهداف مضافة حالياً.</p>`;
+                return;
+            }
+
+            container.innerHTML = state.goals.map(g => {
+                const percent = Math.min(100, Math.max(0, ((netWorth / g.target) * 100))).toFixed(1);
+                return `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs">
+                            <span class="font-bold text-gray-200 flex items-center gap-1"><i class="fa-solid ${g.icon} text-gold"></i> ${g.title}</span>
+                            <span class="text-gold font-bold">${percent}% (${netWorth.toLocaleString()} / ${Number(g.target).toLocaleString()} ج.م)</span>
+                        </div>
+                        <div class="w-full bg-card-light h-2 rounded-full overflow-hidden">
+                            <div class="bg-gold h-full transition-all duration-500" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRecentTrans() {
+            const container = document.getElementById('dash-recent-list');
+            const recent = [...state.transactions].reverse().slice(0, 5);
+
+            if (recent.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">لا توجد معاملات مسجلة بعد.</p>`;
+                return;
+            }
+
+            container.innerHTML = recent.map(t => {
+                const isPlus = t.type === 'income';
+                const color = isPlus ? 'text-green-400' : 'text-red-400';
+                const sign = isPlus ? '+' : '-';
+                return `
+                    <div class="flex justify-between items-center bg-card-light p-2.5 rounded-xl border border-gray-800 text-xs">
+                        <div>
+                            <p class="font-bold text-white">${t.desc}</p>
+                            <span class="text-[10px] text-gray-500">${t.date}</span>
+                        </div>
+                        <span class="font-bold ${color} dir-ltr">${sign}${Number(t.amount).toLocaleString()} ج.م</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFullTransTable() {
+            const container = document.getElementById('full-trans-table');
+            if (state.transactions.length === 0) {
+                container.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-xs text-gray-500">لا توجد بيانات.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = [...state.transactions].reverse().map(t => {
+                const badge = t.type === 'income' ? 'bg-green-500/10 text-green-400' : (t.type === 'withdrawal' ? 'bg-amber-500/10 text-amber-400' : 'bg-red-500/10 text-red-400');
+                const typeName = t.type === 'income' ? 'إيراد' : (t.type === 'withdrawal' ? 'سحب يدوي' : 'مصروف');
+                return `
+                    <tr class="hover:bg-card-light/50 transition">
+                        <td class="p-3 text-xs text-gray-400">${t.date}</td>
+                        <td class="p-3"><span class="px-2 py-1 rounded-full text-[10px] font-bold ${badge}">${typeName}</span></td>
+                        <td class="p-3 font-semibold text-white">${t.desc}</td>
+                        <td class="p-3 font-bold text-white">${Number(t.amount).toLocaleString()} ج.م</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteTrans(${t.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderGoalsPage(netWorth) {
+            const container = document.getElementById('goals-container');
+            if (state.goals.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 col-span-2 text-center py-6">اضغط على "هدف جديد" لإضافة أول هدف مالي.</p>`;
+                return;
+            }
+
+            container.innerHTML = state.goals.map(g => {
+                const percent = Math.min(100, Math.max(0, ((netWorth / g.target) * 100))).toFixed(1);
+                const remaining = Math.max(0, g.target - netWorth);
+                return `
+                    <div class="glass-panel p-5 rounded-xl border border-gray-800 space-y-3 relative">
+                        <button onclick="deleteGoal(${g.id})" class="absolute top-4 left-4 text-gray-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="p-3 bg-gold/10 text-gold rounded-xl text-xl">
+                                <i class="fa-solid ${g.icon}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">${g.title}</h4>
+                                <p class="text-xs text-gray-400">المستهدف: ${Number(g.target).toLocaleString()} ج.م</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs font-bold">
+                                <span class="text-gold">نسبة التقدم</span>
+                                <span class="text-white">${percent}%</span>
+                            </div>
+                            <div class="w-full bg-card-light h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-gold h-full transition-all duration-500" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-gray-800/60 flex justify-between items-center text-xs">
+                            <span class="text-gray-400">المتبقي للوصول:</span>
+                            <span class="font-bold text-amber-400">${remaining.toLocaleString()} ج.م</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderVacationsTable() {
+            const container = document.getElementById('vacation-table');
+            if (state.vacations.length === 0) {
+                container.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-xs text-gray-500">لا توجد إجازات مسجلة.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = [...state.vacations].reverse().map(v => {
+                return `
+                    <tr class="hover:bg-card-light/50 transition">
+                        <td class="p-3 text-xs text-gray-400">${v.date}</td>
+                        <td class="p-3 font-semibold text-white">${v.reason}</td>
+                        <td class="p-3 font-bold text-red-400">${Number(v.deduction || 0).toLocaleString()} ج.م</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteVacation(${v.id})" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderLedger() {
+            const container = document.getElementById('ledger-months-container');
+            const months = {};
+            state.transactions.forEach(t => {
+                const monthKey = t.date.substring(0, 7) || "غير محدد";
+                if (!months[monthKey]) months[monthKey] = { income: 0, expense: 0, withdrawal: 0 };
+                if (t.type === 'income') months[monthKey].income += Number(t.amount);
+                if (t.type === 'expense') months[monthKey].expense += Number(t.amount);
+                if (t.type === 'withdrawal') months[monthKey].withdrawal += Number(t.amount);
+            });
+
+            const sortedMonths = Object.keys(months).sort().reverse();
+            if (sortedMonths.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">لا توجد سجلات شهور سابقة بعد.</p>`;
+                return;
+            }
+
+            container.innerHTML = sortedMonths.map(m => {
+                const data = months[m];
+                const net = data.income - data.expense - data.withdrawal;
+                const netColor = net >= 0 ? 'text-green-400' : 'text-red-400';
+                return `
+                    <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                                <i class="fa-regular fa-calendar-check text-gold"></i> شهر: ${m}
+                            </h4>
+                            <div class="flex gap-4 text-xs text-gray-400 mt-1">
+                                <span>دخل: <strong class="text-green-400">${data.income.toLocaleString()}</strong></span>
+                                <span>مصاريف: <strong class="text-red-400">${data.expense.toLocaleString()}</strong></span>
+                                <span>سحب: <strong class="text-amber-400">${data.withdrawal.toLocaleString()}</strong></span>
+                            </div>
+                        </div>
+                        <div class="text-left">
+                            <span class="text-[10px] text-gray-500 block">صافي الشهر</span>
+                            <span class="text-base font-bold ${netColor}">${net.toLocaleString()} ج.م</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleQuickTrans(e) {
+            e.preventDefault();
+            const type = document.getElementById('qt-type').value;
+            const amount = document.getElementById('qt-amount').value;
+            const desc = document.getElementById('qt-desc').value;
+            addTransaction(type, amount, desc);
+            document.getElementById('quickTransForm').reset();
+        }
+
+        function handleFullTrans(e) {
+            e.preventDefault();
+            const type = document.getElementById('ft-type').value;
+            const amount = document.getElementById('ft-amount').value;
+            const desc = document.getElementById('ft-desc').value;
+            addTransaction(type, amount, desc);
+            document.getElementById('fullTransForm').reset();
+        }
+
+        function addTransaction(type, amount, desc) {
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0] + ' ' + now.toTimeString().split(' ')[0].substring(0, 5);
+            state.transactions.push({ id: Date.now(), type, amount: Number(amount), desc, date: dateStr });
+            saveState();
+        }
+
+        function deleteTrans(id) {
+            state.transactions = state.transactions.filter(t => t.id !== id);
+            saveState();
+        }
+
+        function saveGoldData() {
+            const grams = document.getElementById('gold-grams-input').value;
+            const price = document.getElementById('gold-price-input').value;
+            state.gold.grams = Number(grams || 0);
+            state.gold.pricePerGram = Number(price || 3800);
+            saveState();
+            alert('تم تحديث محفظة الذهب بنجاح!');
+        }
+
+        function saveApiKey() {
+            state.apiKeys = [1, 2, 3].map(i => document.getElementById('api-key-' + i).value.trim());
+            state.apiKey = state.apiKeys[0];
+            state.model = document.getElementById('model-input').value.trim() || 'gemini-1.5-flash';
+            saveState();
+            alert('تم حفظ المفاتيح والموديل محلياً بنجاح!');
+        }
+
+        function toggleKey(id) {
+            const el = document.getElementById(id);
+            el.type = el.type === 'password' ? 'text' : 'password';
+        }
+
+        function showAddGoalModal() { document.getElementById('goalModal').classList.remove('hidden'); }
+        function closeAddGoalModal() { document.getElementById('goalModal').classList.add('hidden'); }
+
+        function handleSaveGoal(e) {
+            e.preventDefault();
+            const title = document.getElementById('goal-title').value;
+            const target = document.getElementById('goal-target').value;
+            const icon = document.getElementById('goal-icon').value;
+            state.goals.push({ id: Date.now(), title, target: Number(target), icon });
+            saveState();
+            document.getElementById('goalForm').reset();
+            closeAddGoalModal();
+        }
+
+        function deleteGoal(id) {
+            state.goals = state.goals.filter(g => g.id !== id);
+            saveState();
+        }
+
+        function handleVacation(e) {
+            e.preventDefault();
+            const date = document.getElementById('vac-date').value;
+            const reason = document.getElementById('vac-reason').value;
+            const deduction = document.getElementById('vac-deduction').value;
+            state.vacations.push({ id: Date.now(), date, reason, deduction: Number(deduction || 0) });
+            saveState();
+            document.getElementById('vacationForm').reset();
+        }
+
+        function deleteVacation(id) {
+            state.vacations = state.vacations.filter(v => v.id !== id);
+            saveState();
+        }
+
+        function localReply() {
+            const f = calculateFinances();
+            let reply = `بناءً على أرقامك حالياً يا حمو:\n`;
+            reply += `• صافي ثروتك: ${f.netWorth.toLocaleString()} ج.م (كاش: ${f.netCash.toLocaleString()} / دهب: ${f.goldVal.toLocaleString()})\n`;
+            if (state.goals.length > 0) {
+                const topGoal = state.goals[0];
+                const rem = Math.max(0, topGoal.target - f.netWorth);
+                reply += `• بالنسبة لهدفك (${topGoal.title}): فاضل لك ${rem.toLocaleString()} ج.م عشان تكمل المبلغ.\n`;
+            }
+            if (f.netCash < 0) {
+                reply += `⚠️ تنبيه هام: رصيدك الكاش بالسالب! حاول تقلل السحب والمصاريف الفترة دي عشان تظبط العجز.\n`;
+            } else {
+                reply += `💡 نصيحة استراتيجية: تحويل 30% من أي فائض كاش لجرامات ذهب هيحميك من التضخم ويزود سرعتك للوصول لأهدافك!`;
+            }
+            return reply;
+        }
+
+        // --- REAL CLOUD GEMINI API FETCH CONNECTION ---
+        async function askGemini(msg) {
+            const keys = (state.apiKeys || []).filter(k => k);
+            if (!keys.length) return null;
+
+            const f = calculateFinances();
+            const ctx = `أنت مستشار مالي ذكي لتطبيق "محفظتي الذكية". بيانات المستخدم الحالية: صافي الثروة ${f.netWorth} ج.م، الكاش ${f.netCash}، الذهب ${f.goldVal} (${state.gold.grams} جرام)، الأهداف: ${state.goals.map(g => g.title + ' ' + g.target).join('، ')}. أجب بالعامية المصرية باختصار واحترافية على سؤال المستخدم:`;
+            const model = state.model || 'gemini-1.5-flash';
+
+            for (const key of keys) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${key}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: ctx + '\n' + msg }] }]
+                        })
+                    });
+
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
+                    if (text) return text;
+                } catch (err) {
+                    console.error("API error with key, trying next...", err);
+                }
+            }
+            return null;
+        }
+
+        async function handleAiChat(e) {
+            e.preventDefault();
+            const inputEl = document.getElementById('ai-input');
+            const msg = inputEl.value.trim();
+            if (!msg) return;
+
+            appendChatMessage('user', msg);
+            inputEl.value = '';
+
+            const loadingId = 'loading_' + Date.now();
+            appendLoadingMessage(loadingId, 'جاري الاتصال بسيرفرات جوجل سحابياً...');
+
+            const reply = await askGemini(msg);
+            removeMessage(loadingId);
+
+            if (reply) {
+                appendChatMessage('ai', reply);
+            } else {
+                appendChatMessage('ai', localReply() + '\n\n*(ملاحظة: تم استخدام التحليل المحلي لعدم توفر مفتاح API نشط في الإعدادات)*');
+            }
+        }
+
+        function appendChatMessage(sender, text) {
+            const box = document.getElementById('chat-box');
+            const isUser = sender === 'user';
+            
+            const html = `
+                <div class="flex items-start gap-2 max-w-[85%] ${isUser ? 'mr-auto flex-row-reverse' : ''}">
+                    <div class="p-2 ${isUser ? 'bg-gold text-black' : 'bg-gold/10 text-gold'} rounded-lg text-xs">
+                        <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'}"></i>
+                    </div>
+                    <div class="${isUser ? 'bg-gold text-black' : 'bg-card-light text-gray-200 border border-gray-800'} p-3 rounded-2xl ${isUser ? 'rounded-tl-none' : 'rounded-tr-none'} text-xs leading-relaxed whitespace-pre-line">
+                        ${text}
+                    </div>
+                </div>
+            `;
+            box.innerHTML += html;
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function appendLoadingMessage(id, text) {
+            const box = document.getElementById('chat-box');
+            const html = `
+                <div id="${id}" class="flex items-start gap-2 max-w-[85%]">
+                    <div class="p-2 bg-gold/10 text-gold rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-card-light p-3 rounded-2xl rounded-tr-none text-xs text-gray-400 border border-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-spinner animate-spin text-gold"></i> ${text}
+                    </div>
+                </div>
+            `;
+            box.innerHTML += html;
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function removeMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function clearChat() {
+            document.getElementById('chat-box').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
